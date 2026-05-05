@@ -19,7 +19,7 @@ import Link from 'next/link';
 
 export default function ProjectTasksPage() {
   const { id } = useParams();
-  const { user } = useAuth();
+  const { user } = useUser();
   const [tasks, setTasks] = useState<any[]>([]);
   const [project, setProject] = useState<any>(null);
   const [showModal, setShowModal] = useState(false);

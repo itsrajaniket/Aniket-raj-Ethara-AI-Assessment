@@ -21,8 +21,10 @@ export const authenticate = async (req: AuthRequest, res: Response, next: NextFu
       return res.status(401).json({ message: 'Authentication required' });
     }
 
+    console.log('Authenticating token...');
     // Verify Clerk session
     const session = await clerkClient.verifyToken(token);
+    console.log('Token verified, User ID:', session.sub);
     const clerkUserId = session.sub;
 
     // Check if user exists in our DB, if not, sync from Clerk

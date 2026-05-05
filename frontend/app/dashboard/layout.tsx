@@ -21,7 +21,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   useEffect(() => {
     const initAuth = async () => {
       if (isSignedIn) {
+        console.log('User signed in, fetching token...');
         const token = await getToken();
+        console.log('Token received:', token ? 'Yes' : 'No');
         setAuthToken(token);
       }
     };

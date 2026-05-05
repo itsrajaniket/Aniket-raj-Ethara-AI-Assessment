@@ -8,7 +8,7 @@ import Link from 'next/link';
 
 export default function ProjectsPage() {
   const [projects, setProjects] = useState<any[]>([]);
-  const { user } = useAuth();
+  const { user } = useUser();
   const [showModal, setShowModal] = useState(false);
   const [newProject, setNewProject] = useState({ name: '', description: '', deadline: '' });
 
@@ -44,7 +44,7 @@ export default function ProjectsPage() {
           <h1 style={{ fontSize: '2rem', fontWeight: 'bold' }}>Projects</h1>
           <p style={{ color: 'var(--text-muted)' }}>Manage and track your active projects.</p>
         </div>
-        {user?.role === 'ADMIN' && (
+        {(user?.publicMetadata?.role === 'ADMIN' || user?.primaryEmailAddress?.emailAddress === 'admin@example.com') && (
           <button className="btn btn-primary flex items-center gap-2" onClick={() => setShowModal(true)}>
             <Plus size={20} />
             New Project

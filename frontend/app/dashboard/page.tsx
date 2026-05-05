@@ -22,7 +22,7 @@ interface Stats {
 
 export default function DashboardPage() {
   const [stats, setStats] = useState<Stats | null>(null);
-  const { user } = useAuth();
+  const { user } = useUser();
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -41,7 +41,7 @@ export default function DashboardPage() {
   return (
     <div className="fade-in">
       <header style={{ marginBottom: '2rem' }}>
-        <h1 style={{ fontSize: '2rem', fontWeight: 'bold' }}>Welcome back, {user?.name}</h1>
+        <h1 style={{ fontSize: '2rem', fontWeight: 'bold' }}>Welcome back, {user?.fullName}</h1>
         <p style={{ color: 'var(--text-muted)' }}>Here's what's happening with your projects today.</p>
       </header>
 
