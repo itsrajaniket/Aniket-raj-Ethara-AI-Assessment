@@ -1,22 +1,34 @@
 'use client';
 
-import { useAuth } from '@/context/AuthContext';
+import { useAuth, UserButton, useUser } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import Link from 'next/link';
-import { LayoutDashboard, Briefcase, CheckSquare, LogOut, User } from 'lucide-react';
+import { LayoutDashboard, Briefcase, CheckSquare, User as UserIcon } from 'lucide-react';
+import { setAuthToken } from '@/lib/api';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
-  const { user, isLoading, logout } = useAuth();
+  const { isSignedIn, isLoaded, getToken } = useAuth();
+  const { user } = useUser();
   const router = useRouter();
 
   useEffect(() => {
-    if (!isLoading && !user) {
+    if (isLoaded && !isSignedIn) {
       router.push('/login');
     }
-  }, [user, isLoading, router]);
+  }, [isSignedIn, isLoaded, router]);
 
-  if (isLoading || !user) {
+  useEffect(() => {
+    const initAuth = async () => {
+      if (isSignedIn) {
+        const token = await getToken();
+        setAuthToken(token);
+      }
+    };
+    initAuth();
+  }, [isSignedIn, getToken]);
+
+  if (!isLoaded || !isSignedIn) {
     return (
       <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <p>Loading Aura...</p>
@@ -61,29 +73,15 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         </nav>
 
         <div style={{ marginTop: 'auto', paddingTop: '1.5rem', borderTop: '1px solid var(--border)' }}>
-          <div className="flex items-center gap-4 mb-4">
-            <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'var(--border)', overflow: 'hidden' }}>
-              {user.avatarUrl ? (
-                <img src={user.avatarUrl} alt={user.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-              ) : (
-                <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <User size={20} />
-                </div>
-              )}
-            </div>
-            <div>
-              <p style={{ fontWeight: '600', fontSize: '0.9rem' }}>{user.name}</p>
-              <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>{user.role}</p>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <UserButton afterSignOutUrl="/login" />
+              <div>
+                <p style={{ fontWeight: '600', fontSize: '0.9rem' }}>{user?.fullName}</p>
+                <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>{user?.primaryEmailAddress?.emailAddress}</p>
+              </div>
             </div>
           </div>
-          <button 
-            onClick={logout}
-            className="flex items-center gap-2"
-            style={{ color: 'var(--danger)', fontSize: '0.9rem', fontWeight: '600' }}
-          >
-            <LogOut size={18} />
-            Sign Out
-          </button>
         </div>
       </aside>
 

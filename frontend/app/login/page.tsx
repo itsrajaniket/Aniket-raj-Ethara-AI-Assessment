@@ -1,4 +1,4 @@
-import AuthForm from '@/components/AuthForm';
+import { SignIn } from "@clerk/nextjs";
 
 export default function LoginPage() {
   return (
@@ -10,7 +10,7 @@ export default function LoginPage() {
       background: 'radial-gradient(circle at top left, #1e1b4b 0%, #0f172a 100%)',
       padding: '1rem'
     }}>
-      <AuthForm type="login" />
+      <SignIn routing="hash" signUpUrl="/signup" />
     </div>
   );
 }

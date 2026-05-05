@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { AuthProvider } from '@/context/AuthContext';
-import { GoogleOAuthProvider } from '@react-oauth/google';
+import { ClerkProvider } from '@clerk/nextjs';
 
 export const metadata: Metadata = {
   title: "Aura - Project Management",
@@ -14,14 +13,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body>
-        <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || ''}>
-          <AuthProvider>
-            {children}
-          </AuthProvider>
-        </GoogleOAuthProvider>
-      </body>
-    </html>
+    <ClerkProvider>
+      <html lang="en">
+        <body>
+          {children}
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }

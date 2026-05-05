@@ -1,7 +1,9 @@
 import { Request, Response, NextFunction } from 'express';
-import jwt from 'jsonwebtoken';
+import { createClerkClient } from '@clerk/clerk-sdk-node';
 import prisma from '../lib/prisma';
 import { Role } from '@prisma/client';
+
+const clerkClient = createClerkClient({ secretKey: process.env.CLERK_SECRET_KEY });
 
 export interface AuthRequest extends Request {
   user?: {
@@ -19,21 +21,38 @@ export const authenticate = async (req: AuthRequest, res: Response, next: NextFu
       return res.status(401).json({ message: 'Authentication required' });
     }
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as { id: string };
-    
-    const user = await prisma.user.findUnique({
-      where: { id: decoded.id },
-      select: { id: true, email: true, role: true },
+    // Verify Clerk session
+    const session = await clerkClient.verifyToken(token);
+    const clerkUserId = session.sub;
+
+    // Check if user exists in our DB, if not, sync from Clerk
+    let user = await prisma.user.findUnique({
+      where: { id: clerkUserId },
     });
 
     if (!user) {
-      return res.status(401).json({ message: 'User not found' });
+      // Fetch user details from Clerk
+      const clerkUser = await clerkClient.users.getUser(clerkUserId);
+      const email = clerkUser.emailAddresses[0]?.emailAddress;
+      
+      user = await prisma.user.upsert({
+        where: { email },
+        update: { id: clerkUserId, avatarUrl: clerkUser.imageUrl },
+        create: {
+          id: clerkUserId,
+          email,
+          name: clerkUser.fullName || email.split('@')[0],
+          role: Role.MEMBER,
+          avatarUrl: clerkUser.imageUrl,
+        },
+      });
     }
 
-    req.user = user;
+    req.user = { id: user.id, email: user.email, role: user.role };
     next();
   } catch (error) {
-    return res.status(401).json({ message: 'Invalid or expired token' });
+    console.error('Clerk Auth Error:', error);
+    return res.status(401).json({ message: 'Invalid or expired session' });
   }
 };
 

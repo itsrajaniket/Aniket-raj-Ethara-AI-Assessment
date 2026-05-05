@@ -3,10 +3,10 @@
 A premium full-stack project management application with RBAC, Google OAuth, and real-time task tracking.
 
 ## Tech Stack
-- **Frontend**: Next.js 15 (App Router), Axios, Lucide React, Framer Motion
-- **Backend**: Node.js, Express, Prisma ORM
-- **Database**: PostgreSQL
-- **Authentication**: JWT & OAuth 2.0 (Google)
+- **Frontend**: Next.js 15 (App Router), Clerk Auth, Axios, Lucide React
+- **Backend**: Node.js, Express, Clerk Node SDK, Prisma ORM
+- **Database**: PostgreSQL (Supabase/Local)
+- **Authentication**: Clerk (Global Session Management)
 
 ## Features
 - **RBAC**: Admin and Member roles.

@@ -4,23 +4,20 @@ const api = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api',
 });
 
-api.interceptors.request.use((config) => {
-  const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+// We will set the authorization header dynamically from our components
+export const setAuthToken = (token: string | null) => {
   if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
+    api.defaults.headers.Authorization = `Bearer ${token}`;
+  } else {
+    delete api.defaults.headers.Authorization;
   }
-  return config;
-});
+};
 
 api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      if (typeof window !== 'undefined') {
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
-        window.location.href = '/login';
-      }
+      // With Clerk, redirects are handled by their components
     }
     return Promise.reject(error);
   }
