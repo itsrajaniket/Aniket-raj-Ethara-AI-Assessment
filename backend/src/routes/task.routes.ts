@@ -12,7 +12,7 @@ const upload = multer({ dest: 'uploads/' });
 // Get tasks for a project
 router.get('/project/:projectId', authenticate, async (req: AuthRequest, res: Response) => {
   try {
-    const { projectId } = req.params;
+    const projectId = req.params.projectId as string;
     const tasks = await prisma.task.findMany({
       where: { projectId },
       include: { assignee: { select: { id: true, name: true, avatarUrl: true } }, attachments: true },
@@ -68,7 +68,7 @@ router.post('/', authenticate, async (req: AuthRequest, res: Response) => {
 // Update task
 router.put('/:id', authenticate, async (req: AuthRequest, res: Response) => {
   try {
-    const { id } = req.params;
+    const id = req.params.id as string;
     const { title, description, dueDate, priority, status, assignedTo } = req.body;
 
     const existingTask = await prisma.task.findUnique({ where: { id } });
@@ -107,7 +107,7 @@ router.put('/:id', authenticate, async (req: AuthRequest, res: Response) => {
 // Delete task (Admin or creator/assignee?)
 router.delete('/:id', authenticate, async (req: AuthRequest, res: Response) => {
   try {
-    const { id } = req.params;
+    const id = req.params.id as string;
     const task = await prisma.task.findUnique({ where: { id } });
     if (!task) return res.status(404).json({ message: 'Task not found' });
 
@@ -127,7 +127,7 @@ router.delete('/:id', authenticate, async (req: AuthRequest, res: Response) => {
 // File Attachment
 router.post('/:id/attachments', authenticate, upload.single('file'), async (req: AuthRequest, res: Response) => {
   try {
-    const { id: taskId } = req.params;
+    const taskId = req.params.id as string;
     if (!req.file) return res.status(400).json({ message: 'No file uploaded' });
 
     const attachment = await prisma.attachment.create({

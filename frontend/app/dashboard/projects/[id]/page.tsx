@@ -14,7 +14,8 @@ import {
   Search,
   Filter
 } from 'lucide-react';
-import { useAuth } from '@/context/AuthContext';
+import { useUser } from '@clerk/nextjs';
+import Link from 'next/link';
 
 export default function ProjectTasksPage() {
   const { id } = useParams();
@@ -216,6 +217,3 @@ export default function ProjectTasksPage() {
     </div>
   );
 }
-
-// Internal Link Helper
-import Link from 'next/link';

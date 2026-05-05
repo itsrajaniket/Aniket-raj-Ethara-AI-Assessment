@@ -2,21 +2,21 @@
 
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAuth } from '@/context/AuthContext';
+import { useAuth } from '@clerk/nextjs';
 
 export default function RootPage() {
-  const { user, isLoading } = useAuth();
+  const { isSignedIn, isLoaded } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
-    if (!isLoading) {
-      if (user) {
+    if (isLoaded) {
+      if (isSignedIn) {
         router.push('/dashboard');
       } else {
         router.push('/login');
       }
     }
-  }, [user, isLoading, router]);
+  }, [isSignedIn, isLoaded, router]);
 
   return (
     <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#0f172a' }}>

@@ -41,7 +41,7 @@ export const authenticate = async (req: AuthRequest, res: Response, next: NextFu
         create: {
           id: clerkUserId,
           email,
-          name: clerkUser.fullName || email.split('@')[0],
+          name: `${clerkUser.firstName || ''} ${clerkUser.lastName || ''}`.trim() || email.split('@')[0],
           role: Role.MEMBER,
           avatarUrl: clerkUser.imageUrl,
         },

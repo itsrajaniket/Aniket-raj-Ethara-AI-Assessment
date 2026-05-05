@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import api from '@/lib/api';
-import { useAuth } from '@/context/AuthContext';
+import { useUser } from '@clerk/nextjs';
 import { Plus, MoreVertical, Calendar, Users, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 

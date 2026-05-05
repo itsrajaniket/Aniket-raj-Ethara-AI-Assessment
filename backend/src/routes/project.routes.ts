@@ -52,7 +52,7 @@ router.post('/', authenticate, authorize([Role.ADMIN]), async (req: AuthRequest,
 // Update project (Admin only)
 router.put('/:id', authenticate, authorize([Role.ADMIN]), async (req: AuthRequest, res: Response) => {
   try {
-    const { id } = req.params;
+    const id = req.params.id as string;
     const { name, description, deadline, status } = req.body;
 
     const project = await prisma.project.update({
@@ -76,7 +76,7 @@ router.put('/:id', authenticate, authorize([Role.ADMIN]), async (req: AuthReques
 // Delete project (Admin only)
 router.delete('/:id', authenticate, authorize([Role.ADMIN]), async (req: AuthRequest, res: Response) => {
   try {
-    const { id } = req.params;
+    const id = req.params.id as string;
     await prisma.project.delete({ where: { id } });
     res.json({ message: 'Project deleted' });
   } catch (error) {
@@ -87,7 +87,7 @@ router.delete('/:id', authenticate, authorize([Role.ADMIN]), async (req: AuthReq
 // Manage Members (Admin only)
 router.post('/:id/members', authenticate, authorize([Role.ADMIN]), async (req: AuthRequest, res: Response) => {
   try {
-    const { id: projectId } = req.params;
+    const projectId = req.params.id as string;
     const { userId, role } = req.body;
 
     const member = await prisma.projectMember.upsert({
@@ -106,7 +106,8 @@ router.post('/:id/members', authenticate, authorize([Role.ADMIN]), async (req: A
 
 router.delete('/:id/members/:userId', authenticate, authorize([Role.ADMIN]), async (req: AuthRequest, res: Response) => {
   try {
-    const { id: projectId, userId } = req.params;
+    const projectId = req.params.id as string;
+    const userId = req.params.userId as string;
 
     await prisma.projectMember.delete({
       where: { projectId_userId: { projectId, userId } },
@@ -123,7 +124,7 @@ router.delete('/:id/members/:userId', authenticate, authorize([Role.ADMIN]), asy
 // Get Activity Logs
 router.get('/:id/activity', authenticate, async (req: AuthRequest, res: Response) => {
   try {
-    const { id } = req.params;
+    const id = req.params.id as string;
     const logs = await prisma.activityLog.findMany({
       where: { projectId: id },
       include: { user: { select: { name: true, avatarUrl: true } } },
