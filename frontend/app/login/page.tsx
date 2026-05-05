@@ -10,7 +10,7 @@ export default function LoginPage() {
       background: 'radial-gradient(circle at top left, #1e1b4b 0%, #0f172a 100%)',
       padding: '1rem'
     }}>
-      <SignIn routing="hash" signUpUrl="/signup" />
+      <SignIn routing="hash" signUpUrl="/signup" forceRedirectUrl="/dashboard" />
     </div>
   );
 }

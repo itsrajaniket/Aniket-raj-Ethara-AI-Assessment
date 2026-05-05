@@ -88,15 +88,20 @@ router.delete('/:id', authenticate, authorize([Role.ADMIN]), async (req: AuthReq
 router.post('/:id/members', authenticate, authorize([Role.ADMIN]), async (req: AuthRequest, res: Response) => {
   try {
     const projectId = req.params.id as string;
-    const { userId, role } = req.body;
+    const { email, role } = req.body;
+
+    const userToAdd = await prisma.user.findUnique({ where: { email } });
+    if (!userToAdd) {
+      return res.status(404).json({ message: 'User with this email not found' });
+    }
 
     const member = await prisma.projectMember.upsert({
-      where: { projectId_userId: { projectId, userId } },
+      where: { projectId_userId: { projectId, userId: userToAdd.id } },
       update: { role },
-      create: { projectId, userId, role },
+      create: { projectId, userId: userToAdd.id, role },
     });
 
-    await logActivity(projectId, req.user!.id, 'MEMBER_ADDED', `Added user to project with role ${role}`);
+    await logActivity(projectId, req.user!.id, 'MEMBER_ADDED', `Added ${email} to project with role ${role}`);
 
     res.json(member);
   } catch (error) {

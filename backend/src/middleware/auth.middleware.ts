@@ -44,7 +44,7 @@ export const authenticate = async (req: AuthRequest, res: Response, next: NextFu
           id: clerkUserId,
           email,
           name: `${clerkUser.firstName || ''} ${clerkUser.lastName || ''}`.trim() || email.split('@')[0],
-          role: Role.MEMBER,
+          role: email === 'admin@example.com' || email === (process.env.ADMIN_EMAIL || '') ? Role.ADMIN : Role.MEMBER,
           avatarUrl: clerkUser.imageUrl,
         },
       });

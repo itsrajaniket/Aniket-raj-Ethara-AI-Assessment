@@ -1,0 +1,17 @@
+{
+  "name": "aura-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently \"npm run dev --workspace=backend\" \"npm run dev --workspace=frontend\"",
+    "install-all": "npm install && npm install --workspace=backend && npm install --workspace=frontend",
+    "clean": "taskkill /F /IM node.exe || exit 0"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  },
+  "workspaces": [
+    "backend",
+    "frontend"
+  ]
+}

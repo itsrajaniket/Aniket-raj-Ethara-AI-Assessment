@@ -1,16 +1,17 @@
 'use client';
 
+import React, { useEffect } from 'react';
 import { useAuth, UserButton, useUser } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
 import Link from 'next/link';
 import { LayoutDashboard, Briefcase, CheckSquare, User as UserIcon } from 'lucide-react';
-import { setAuthToken } from '@/lib/api';
+import { injectTokenFetcher } from '@/lib/api';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const { isSignedIn, isLoaded, getToken } = useAuth();
   const { user } = useUser();
   const router = useRouter();
+  const [isReady, setIsReady] = React.useState(false);
 
   useEffect(() => {
     if (isLoaded && !isSignedIn) {
@@ -19,18 +20,14 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   }, [isSignedIn, isLoaded, router]);
 
   useEffect(() => {
-    const initAuth = async () => {
-      if (isSignedIn) {
-        console.log('User signed in, fetching token...');
-        const token = await getToken();
-        console.log('Token received:', token ? 'Yes' : 'No');
-        setAuthToken(token);
-      }
-    };
-    initAuth();
+    if (isSignedIn) {
+      console.log('Initializing API with Clerk fetcher...');
+      injectTokenFetcher(getToken);
+      setIsReady(true);
+    }
   }, [isSignedIn, getToken]);
 
-  if (!isLoaded || !isSignedIn) {
+  if (!isLoaded || !isSignedIn || !isReady) {
     return (
       <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <p>Loading Aura...</p>
